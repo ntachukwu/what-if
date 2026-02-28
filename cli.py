@@ -30,12 +30,12 @@ def get_api_key(env_var: str) -> str:
 @click.argument("output_video", type=click.Path(path_type=Path))
 @click.option(
     "--openai-key",
-    env_var="OPENAI_API_KEY",
+    envvar="OPENAI_API_KEY",
     help="OpenAI API key (or set OPENAI_API_KEY env var)",
 )
 @click.option(
     "--tenor-key",
-    env_var="TENOR_API_KEY",
+    envvar="TENOR_API_KEY",
     help="Tenor API key (optional, for higher rate limits)",
 )
 @click.option("--skip-memes", is_flag=True, help="Skip meme search")
