@@ -4,7 +4,7 @@ lint:
 	uv run ruff check .
 
 typecheck:
-	uv run mypy domain/ app/
+	uv run mypy --explicit-package-bases domain/ app/ adapters/ cli.py
 
 test:
 	uv run pytest

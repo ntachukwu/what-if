@@ -1147,6 +1147,7 @@ name = "what-if"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
     { name = "ffmpeg-python" },
     { name = "moviepy" },
     { name = "openai" },
@@ -1167,6 +1168,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "click", specifier = ">=8.1.0" },
     { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "moviepy", specifier = ">=2.2.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },

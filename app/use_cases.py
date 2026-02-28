@@ -4,6 +4,7 @@ Application layer — use cases that orchestrate the domain.
 These coordinate the ports (adapters) to fulfill user requests.
 """
 
+from typing import Any
 
 from domain.models import RemixRequest, RemixResult
 from domain.ports import VideoAnalyzer, ScriptGenerator, MemeFinder, VideoCompositor
@@ -16,7 +17,7 @@ class RemixVideo:
         self,
         analyzer: VideoAnalyzer,
         script_gen: ScriptGenerator,
-        meme_finder: MemeFinder,
+        meme_finder: MemeFinder | None,
         compositor: VideoCompositor,
     ) -> None:
         self._analyzer = analyzer
@@ -30,6 +31,8 @@ class RemixVideo:
 
         script = self._script_gen.generate(analysis)
 
-        memes = self._meme_finder.search(analysis.topic, limit=5)
+        memes: list[Any] = []
+        if self._meme_finder:
+            memes = self._meme_finder.search(analysis.topic, limit=5)
 
         return self._compositor.compose(request, script, memes)
