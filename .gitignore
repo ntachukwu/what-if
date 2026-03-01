@@ -22,3 +22,13 @@ htmlcov/
 .idea/
 .vscode/
 *.swp
+
+# Output files
+*.mp4
+output*/
+*.wav
+*.mp3
+
+# Environment
+.env
+.whatif_frames/

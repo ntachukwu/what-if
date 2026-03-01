@@ -87,17 +87,48 @@ Return ONLY valid JSON, no other text."""
     def _parse_response(self, content: str) -> VideoAnalysis:
         """Parse the Ollama response into VideoAnalysis."""
         import json
+        import re
 
         content = content.strip()
+
         if content.startswith("```json"):
             content = content[7:]
-        if content.startswith("```"):
+        elif content.startswith("```"):
             content = content[3:]
         if content.endswith("```"):
             content = content[:-3]
         content = content.strip()
 
-        data = json.loads(content)
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError:
+            json_start = content.find("{")
+            json_end = content.rfind("}") + 1
+            if json_start >= 0 and json_end > json_start:
+                content = content[json_start:json_end]
+                try:
+                    data = json.loads(content)
+                except json.JSONDecodeError:
+                    content = re.sub(r",\s*}", "}", content)
+                    content = re.sub(r",\s*]", "]", content)
+                    content = content.replace("\n", " ").replace("\r", "")
+                    content = re.sub(r"\s+", " ", content)
+                    try:
+                        data = json.loads(content)
+                    except json.JSONDecodeError:
+                        data = {
+                            "topic": "video",
+                            "summary": "content",
+                            "key_moments": [],
+                            "humor_style": None,
+                        }
+            else:
+                data = {
+                    "topic": "video",
+                    "summary": "content",
+                    "key_moments": [],
+                    "humor_style": None,
+                }
 
         return VideoAnalysis(
             topic=data.get("topic", ""),
