@@ -1,36 +1,30 @@
 """
-Adapter: OpenAIScriptGenerator
+Adapter: OllamaScriptGenerator
 
-Generates a script from video analysis using OpenAI GPT.
+Generates a script from video analysis using Ollama.
 """
 
-from openai import OpenAI
+import ollama  # type: ignore[import-untyped]
 
 from domain.models import VideoAnalysis, Script, ScriptCue
 
 
-class OpenAIScriptGenerator:
-    """Generate script using OpenAI's GPT model."""
+class OllamaScriptGenerator:
+    """Generate script using Ollama."""
 
-    def __init__(self, api_key: str) -> None:
-        self._client = OpenAI(api_key=api_key)
+    def __init__(self, model: str = "llama3.2") -> None:
+        self._model = model
 
     def generate(self, analysis: VideoAnalysis) -> Script:
         """Create a script based on video analysis."""
         prompt = self._build_prompt(analysis)
 
-        response = self._client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-            max_tokens=500,
+        response = ollama.chat(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
         )
 
-        content = response.choices[0].message.content or ""
+        content = response["message"]["content"]
         return self._parse_response(content)
 
     def _build_prompt(self, analysis: VideoAnalysis) -> str:
@@ -48,7 +42,7 @@ Create an engaging, short script for a TikTok video. Return JSON with:
 Return ONLY valid JSON."""
 
     def _parse_response(self, content: str) -> Script:
-        """Parse GPT response into Script."""
+        """Parse response into Script."""
         import json
 
         content = content.strip()
